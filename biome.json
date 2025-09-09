@@ -7,8 +7,8 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "include": ["src/**/*.svelte", "**/*.json", "**/*.js"],
-    "ignore": [".svelte-kit/*"]
+    "include": ["**/*.json", "**/*.ts"],
+    "ignore": [".svelte-kit/*", "_public_legacy/*", "_src_legacy/*"]
   },
   "formatter": {
     "enabled": true,
