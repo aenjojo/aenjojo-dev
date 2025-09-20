@@ -31,3 +31,126 @@ model Session {
 
   @@map("sessions")
 }
+
+model Link {
+  id   String @id @default(cuid(2))
+  code String @unique
+  url  String
+  meta Json?
+
+  @@map("links")
+}
+
+model About {
+  id      String @id @default(cuid(2))
+  name    String
+  summary String
+  role    String
+}
+
+model Social {
+  id   String @id @default(cuid(2))
+  code String @unique
+  name String
+  link String
+
+  @@map("socials")
+}
+
+model Skill {
+  id   String @id @default(cuid(2))
+  name String
+
+  ExperienceSkill ExperienceSkill[]
+  EducationSkill  EducationSkill[]
+  ProjectStack    ProjectStack[]
+
+  @@map("skills")
+}
+
+model Experience {
+  id          String    @id @default(cuid(2))
+  place       String
+  role        String
+  workType    WorkType  @map("work_type")
+  workTime    WorkTime  @map("work_time")
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  description String[]  @map("descriptions")
+
+  ExperienceSkill ExperienceSkill[]
+
+  @@map("experiences")
+}
+
+model ExperienceSkill {
+  experienceId String @map("experience_id")
+  skillId      String @map("skill_id")
+
+  Experience Experience @relation(fields: [experienceId], references: [id])
+  Skill      Skill      @relation(fields: [skillId], references: [id])
+
+  @@id([experienceId, skillId])
+  @@map("experience_skills")
+}
+
+model Education {
+  id          String    @id @default(cuid(2))
+  place       String
+  degree      String
+  gpa         Int // gpa * 100
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  description String[]  @map("descriptions")
+
+  EducationSkill EducationSkill[]
+
+  @@map("educations")
+}
+
+model EducationSkill {
+  educationId String @map("education_id")
+  skillId     String @map("skill_id")
+
+  Education Education @relation(fields: [educationId], references: [id])
+  Skill     Skill     @relation(fields: [skillId], references: [id])
+
+  @@id([educationId, skillId])
+  @@map("education_skills")
+}
+
+model Project {
+  id       String  @id @default(cuid(2))
+  code     String  @unique
+  title    String
+  brief    String
+  detail   Json
+  imageUrl String? @map("image_url")
+  repoUrl  String? @map("repo_url")
+  liveUrl  String? @map("demo_url")
+
+  ProjectStack ProjectStack[]
+}
+
+model ProjectStack {
+  projectId String @map("project_id")
+  stackId   String @map("stack_id")
+
+  Project Project @relation(fields: [projectId], references: [id])
+  Stack   Skill   @relation(fields: [stackId], references: [id])
+
+  @@id([projectId, stackId])
+  @@map("project_stacks")
+}
+
+enum WorkType {
+  onsite
+  hybrid
+  remote
+}
+
+enum WorkTime {
+  fulltime
+  parttime
+  freelance
+}
