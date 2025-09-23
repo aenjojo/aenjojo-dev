@@ -89,7 +89,22 @@ export const actions = {
 
     redirect(303, '/admin/welcome');
   },
-  logout: async () => {
-    //
+  logout: async ({ cookies }) => {
+    const sessionToken = cookies.get(keys.cookie.sesionToken);
+
+    if (!sessionToken) {
+      redirect(303, '/admin/auth');
+    }
+
+    const [selector] = sessionToken.split('.');
+
+    await db.session.update({
+      data: { isExpired: true },
+      where: { id: selector },
+    });
+
+    cookies.delete(keys.cookie.sesionToken, { path: '/' });
+
+    redirect(303, '/admin/auth');
   },
 } satisfies Actions;
