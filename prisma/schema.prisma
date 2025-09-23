@@ -42,7 +42,7 @@ model Link {
 }
 
 model About {
-  id      String @id @default(cuid(2))
+  id      String @id
   name    String
   summary String
   role    String
@@ -153,4 +153,5 @@ enum WorkTime {
   fulltime
   parttime
   freelance
+  contract
 }
