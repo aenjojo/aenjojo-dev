@@ -1,7 +1,23 @@
+import { db } from '$lib/services/db.server';
 import { checkAccess } from '../check-access.server';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
   await checkAccess(cookies);
-  return;
+
+  const educations = await db.education.findMany({
+    select: {
+      id: true,
+      degree: true,
+      place: true,
+      gpa: true,
+      startDate: true,
+      endDate: true,
+    },
+    orderBy: {
+      startDate: 'desc',
+    },
+  });
+
+  return educations;
 };
