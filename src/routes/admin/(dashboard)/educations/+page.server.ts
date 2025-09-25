@@ -1,6 +1,6 @@
 import { db } from '$lib/services/db.server';
 import { checkAccess } from '../check-access.server';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
   await checkAccess(cookies);
@@ -21,3 +21,21 @@ export const load: PageServerLoad = async ({ cookies }) => {
 
   return educations;
 };
+
+export const actions = {
+  create: async ({ cookies, request }) => {
+    await checkAccess(cookies);
+
+    const form = await request.formData();
+  },
+  update: async ({ cookies, request }) => {
+    await checkAccess(cookies);
+
+    const form = await request.formData();
+  },
+  delete: async ({ cookies, request }) => {
+    await checkAccess(cookies);
+
+    const form = await request.formData();
+  },
+} satisfies Actions;
