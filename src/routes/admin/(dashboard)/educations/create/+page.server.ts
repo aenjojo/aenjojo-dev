@@ -1,48 +1,16 @@
-import { db } from '$lib/services/db.server';
-import { fail } from '@sveltejs/kit';
+import { DateTime } from 'luxon';
 import { checkAccess } from '../../check-access.server';
 import type { Actions, PageServerLoad } from './$types';
-import { DateTime } from 'luxon';
+import { fail } from '@sveltejs/kit';
+import { db } from '$lib/services/db.server';
 
-export const load: PageServerLoad = async ({ cookies, params }) => {
+export const load: PageServerLoad = async ({ cookies }) => {
   await checkAccess(cookies);
-
-  const education = await db.education.findFirst({
-    select: {
-      degree: true,
-      place: true,
-      gpa: true,
-      startDate: true,
-      endDate: true,
-      description: true,
-      EducationSkill: {
-        select: {
-          Skill: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      },
-    },
-    where: {
-      id: params.id,
-    },
-  });
-
-  const skills = await db.skill.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-
-  return { education, skills };
+  return;
 };
 
 export const actions = {
-  update: async ({ cookies, request, params }) => {
+  create: async ({ cookies, request }) => {
     await checkAccess(cookies);
 
     const form = await request.formData();
@@ -68,7 +36,7 @@ export const actions = {
       .split(/(?:; +)/g)
       .filter((e) => e !== '');
 
-    await db.education.update({
+    await db.education.create({
       data: {
         place: place.toString(),
         degree: degree.toString(),
@@ -86,7 +54,6 @@ export const actions = {
           endDate: DateTime.fromISO(endDate.toString()).toJSDate(),
         }),
       },
-      where: { id: params.id },
     });
 
     return { success: true };

@@ -1,4 +1,5 @@
 import { db } from '$lib/services/db.server';
+import { fail } from '@sveltejs/kit';
 import { checkAccess } from '../check-access.server';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -23,19 +24,20 @@ export const load: PageServerLoad = async ({ cookies }) => {
 };
 
 export const actions = {
-  create: async ({ cookies, request }) => {
-    await checkAccess(cookies);
-
-    const form = await request.formData();
-  },
-  update: async ({ cookies, request }) => {
-    await checkAccess(cookies);
-
-    const form = await request.formData();
-  },
   delete: async ({ cookies, request }) => {
     await checkAccess(cookies);
 
     const form = await request.formData();
+    const id = form.get('id');
+
+    if (!id) {
+      return fail(400, { notFound: true });
+    }
+
+    await db.education.delete({
+      where: { id: id.toString() },
+    });
+
+    return { success: true };
   },
 } satisfies Actions;
