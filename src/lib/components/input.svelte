@@ -25,13 +25,14 @@
         <input type={showText ? "text" : "password"} {required} {...props} />
       </label>
       <button
+        type="button"
         class="btn btn-square join-item"
         onclick={() => (showText = !showText)}
       >
         {#if showText}
-          <Eye />
+          <EyeOff class="inline-block size-4" />
         {:else}
-          <EyeOff />
+          <Eye class="inline-block size-4" />
         {/if}
       </button>
     </div>
