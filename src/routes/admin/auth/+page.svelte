@@ -12,13 +12,13 @@
     class="bg-white p-8 w-96 rounded-lg space-y-4"
   >
     <Input
-      id="username"
       name="username"
       label="Username"
       type="text"
       value={form?.username ?? ""}
+      required
     />
-    <Input id="password" label="Password" name="password" type="password" />
+    <Input name="password" label="Password" type="password" required />
     {#if form?.missing}
       <p>Username or password is missing</p>
     {/if}
