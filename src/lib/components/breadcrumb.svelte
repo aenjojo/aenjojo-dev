@@ -12,10 +12,11 @@
   const { paths, current }: Props = $props();
 </script>
 
-<div class="space-x-1">
-  {#each paths as path}
-    <a href={path.link}>{path.name}</a>
-    <span>&rsaquo;</span>
-  {/each}
-  <span>{current}</span>
+<div class="breadcrumbs text-sm">
+  <ul>
+    {#each paths as path}
+      <li><a href={path.link}>{path.name}</a></li>
+    {/each}
+    <li>{current}</li>
+  </ul>
 </div>
