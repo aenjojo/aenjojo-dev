@@ -1,31 +1,46 @@
 <script lang="ts">
   import type { HTMLInputAttributes } from "svelte/elements";
+  import { Eye, EyeOff } from "@lucide/svelte";
 
   interface Props extends HTMLInputAttributes {
     label: string;
+    note?: string;
+    hint?: string;
   }
 
-  const { id, label, type, ...props }: Props = $props();
+  const { label, note, hint, type, required, ...props }: Props = $props();
   let showText = $state(false);
 </script>
 
-<div class="flex flex-col max-w-80">
-  <label for={id}>{label}</label>
-  <div class="flex w-full border border-blue-200 rounded-md overflow-hidden">
-    <input
-      {id}
-      type={type === "password" ? (!showText ? "password" : "text") : type}
-      class="px-1.5 h-8 w-full {type === 'password' ? 'rounded-l-md' : 'rounded-md'}"
-      {...props}
-    />
-    {#if type === "password"}
+<fieldset class="fieldset">
+  <legend class="fieldset-legend">
+    {label}{required ? "" : " (optional)"}
+  </legend>
+  {#if note}
+    <p class="label">{note}</p>
+  {/if}
+  {#if type === "password"}
+    <div class="join validator">
+      <label class="input validator join-item">
+        <input type={showText ? "text" : "password"} {required} {...props} />
+      </label>
       <button
-        type="button"
-        class="w-8 h-8 bg-blue-200"
+        class="btn btn-square join-item"
         onclick={() => (showText = !showText)}
       >
-        {showText ? "A" : "#"}
+        {#if showText}
+          <Eye />
+        {:else}
+          <EyeOff />
+        {/if}
       </button>
-    {/if}
-  </div>
-</div>
+    </div>
+  {:else}
+    <label class="input validator join-item">
+      <input {type} {required} {...props} />
+    </label>
+  {/if}
+  {#if hint}
+    <p class="validator-hint hidden">{hint}</p>
+  {/if}
+</fieldset>
