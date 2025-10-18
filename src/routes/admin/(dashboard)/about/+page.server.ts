@@ -39,8 +39,14 @@ export const actions = {
       return fail(400, { name, missing: true });
     }
 
-    await db.about.update({
-      data: {
+    await db.about.upsert({
+      create: {
+        id: '1',
+        name: name.toString(),
+        role: role?.toString() || '',
+        summary: summary?.toString() || '',
+      },
+      update: {
         name: name.toString(),
         role: role?.toString() || '',
         summary: summary?.toString() || '',
