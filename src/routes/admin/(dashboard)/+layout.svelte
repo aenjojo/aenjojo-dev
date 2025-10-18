@@ -14,12 +14,23 @@
     Newspaper,
   } from "@lucide/svelte";
   import type { Component } from "svelte";
+  import { outerWidth } from "svelte/reactivity/window";
 
+  const openDrawer = outerWidth.current
+    ? outerWidth.current < 640
+      ? false
+      : true
+    : false;
   const { children } = $props();
 </script>
 
 <div class="drawer drawer-open">
-  <input id="side-drawer" type="checkbox" class="drawer-toggle" />
+  <input
+    id="side-drawer"
+    type="checkbox"
+    class="drawer-toggle"
+    checked={openDrawer}
+  />
   <div class="drawer-content">
     {@render children()}
   </div>
@@ -45,20 +56,25 @@
         {@render menuLink("/admin/articles", "Article", Newspaper)}
       </ul>
       <div
-        class="flex is-drawer-open:w-full is-drawer-open:flex-row-reverse is-drawer-open:justify-between is-drawer-close:flex-col"
+        class="flex is-drawer-open:w-full is-drawer-open:sm:flex-row-reverse is-drawer-open:justify-between is-drawer-close:flex-col"
       >
-        <form class="m-2 bg-base-200 text-base-content">
+        <form
+          class="m-2 bg-base-200 text-base-content"
+          action="/admin/auth?/logout"
+          method="POST"
+        >
           <button
             class="btn btn-ghost btn-error is-drawer-close:btn-square is-drawer-close:tooltip is-drawer-close:tooltip-right"
             data-tip="Logout"
           >
             <LogOut class="inline-block size-4 my-1.5" />
-            <span class="is-drawer-close:hidden whitespace-nowrap">Log out</span
-            >
+            <span class="is-drawer-close:hidden whitespace-nowrap">
+              Log out
+            </span>
           </button>
         </form>
         <div
-          class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right"
+          class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right hidden sm:block"
           data-tip="Open"
         >
           <label
