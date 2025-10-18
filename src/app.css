@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@plugin 'daisyui' {
+  themes: light --default;
+}
 
 /* spline-sans-latin-wght-normal */
 @font-face {
@@ -44,22 +47,3 @@
   --font-sans: 'Spline Sans Variable', sans-serif;
   --font-mono: 'Spline Sans Mono Variable', monospace;
 }
-
-/*
-h1 { @apply text-3xl font-bold }
-h2 { @apply text-2xl font-bold }
-h3 { @apply text-xl font-semibold }
-h4 { @apply text-lg font-medium }
-h1,h2,h3,h4 { @apply my-1 }
-
-p { @apply mb-2 }
-
-ol { @apply list-decimal list-inside }
-ul { @apply list-disc list-inside }
-ol ol, ul ol { @apply list-decimal list-inside ml-4 }
-ul ul, ol ul { @apply list-disc list-inside ml-4 }
-
-.project section {
-  @apply py-2
-}
-*/
