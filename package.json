@@ -37,7 +37,7 @@
     "@fontsource-variable/spline-sans-mono": "^5.1.1",
     "@lucide/svelte": "^0.544.0",
     "@types/node": "^24.3.3",
-    "daisyui": "^5.1.27",
+    "daisyui": "^5.3.7",
     "dotenv": "^17.2.2",
     "luxon": "^3.7.2"
   }
