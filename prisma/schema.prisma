@@ -46,6 +46,8 @@ model About {
   name    String
   summary String
   role    String
+
+  @@map("about")
 }
 
 model Social {
@@ -130,6 +132,8 @@ model Project {
   liveUrl  String? @map("demo_url")
 
   ProjectStack ProjectStack[]
+
+  @@map("projects")
 }
 
 model ProjectStack {
