@@ -3,10 +3,14 @@
     label: string;
     note?: string;
     name: string;
-    list: string[];
+    list: {
+      label: string;
+      value: string;
+    }[];
+    active?: string[];
   }
 
-  const { label, note, name, list }: Props = $props();
+  const { label, note, name, list, active }: Props = $props();
 </script>
 
 <fieldset class="fieldset">
@@ -16,7 +20,14 @@
   {/if}
   <div class="flex flex-wrap gap-0.5">
     {#each list as item}
-      <input class="btn" type="checkbox" {name} aria-label={item} />
+      <input
+        class="btn"
+        type="checkbox"
+        aria-label={item.label}
+        value={item.value}
+        checked={active ? active.includes(item.value) : false}
+        {name}
+      />
     {/each}
   </div>
 </fieldset>
