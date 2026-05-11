@@ -1,8 +1,8 @@
-import { db } from '$lib/services/db.server';
 import { fail } from '@sveltejs/kit';
+import { DateTime } from 'luxon';
+import { db } from '$lib/services/db.server';
 import { checkAccess } from '../../check-access.server';
 import type { Actions, PageServerLoad } from './$types';
-import { DateTime } from 'luxon';
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
   await checkAccess(cookies);
@@ -31,6 +31,10 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
     },
   });
 
+  if (!education) {
+    throw new Error();
+  }
+
   const skills = await db.skill.findMany({
     select: {
       id: true,
@@ -38,7 +42,10 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
     },
   });
 
-  return { education, skills };
+  return {
+    education,
+    skills: skills.map((e) => ({ value: e.id, label: e.name })),
+  };
 };
 
 export const actions = {
@@ -52,33 +59,39 @@ export const actions = {
     const startDate = form.get('start-date');
     const endDate = form.get('end-date');
     const description = form.get('description');
-    const skills = form.get('skills');
+    const skills = form.getAll('skills');
 
-    if (!place || !degree || !gpa || !startDate || !description || !skills) {
+    if (!place || !degree || !gpa || !startDate) {
       return fail(400, { missing: true });
     }
 
     const descList = description
-      .toString()
+      ?.toString()
       .split(/(?:\r\n+|\r+|\n+)/g)
-      .filter((e) => e !== '');
-
-    const skillList = skills
-      .toString()
-      .split(/(?:; +)/g)
       .filter((e) => e !== '');
 
     await db.education.update({
       data: {
         place: place.toString(),
         degree: degree.toString(),
-        gpa: Number(gpa.toString()) || 0,
+        gpa: Number(gpa.toString()) * 100 || 0,
         startDate: DateTime.fromISO(startDate.toString()).toJSDate(),
         description: descList,
         EducationSkill: {
-          create: skillList.map((skillId) => ({
-            Skill: {
-              connect: { id: skillId },
+          deleteMany: {
+            educationId: params.id,
+          },
+          connectOrCreate: skills.map((skill) => ({
+            create: {
+              Skill: {
+                connect: { id: skill.toString() },
+              },
+            },
+            where: {
+              educationId_skillId: {
+                educationId: params.id,
+                skillId: skill.toString(),
+              },
             },
           })),
         },

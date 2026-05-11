@@ -1,12 +1,16 @@
+import { fail } from '@sveltejs/kit';
 import { DateTime } from 'luxon';
+import { getAvailableSkills } from '$lib/handlers/get-skills.server';
+import { db } from '$lib/services/db.server';
 import { checkAccess } from '../../check-access.server';
 import type { Actions, PageServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
-import { db } from '$lib/services/db.server';
 
 export const load: PageServerLoad = async ({ cookies }) => {
   await checkAccess(cookies);
-  return;
+
+  const data = await getAvailableSkills();
+
+  return data;
 };
 
 export const actions = {
@@ -20,33 +24,28 @@ export const actions = {
     const startDate = form.get('start-date');
     const endDate = form.get('end-date');
     const description = form.get('description');
-    const skills = form.get('skills');
+    const skills = form.getAll('skills');
 
-    if (!place || !degree || !gpa || !startDate || !description || !skills) {
+    if (!place || !degree || !gpa || !startDate) {
       return fail(400, { missing: true });
     }
 
     const descList = description
-      .toString()
+      ?.toString()
       .split(/(?:\r\n+|\r+|\n+)/g)
-      .filter((e) => e !== '');
-
-    const skillList = skills
-      .toString()
-      .split(/(?:; +)/g)
       .filter((e) => e !== '');
 
     await db.education.create({
       data: {
         place: place.toString(),
         degree: degree.toString(),
-        gpa: Number(gpa.toString()) || 0,
+        gpa: Number(gpa.toString()) * 100 || 0,
         startDate: DateTime.fromISO(startDate.toString()).toJSDate(),
         description: descList,
         EducationSkill: {
-          create: skillList.map((skillId) => ({
+          create: skills.map((skill) => ({
             Skill: {
-              connect: { id: skillId },
+              connect: { id: skill.toString() },
             },
           })),
         },
