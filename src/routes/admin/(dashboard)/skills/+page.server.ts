@@ -1,3 +1,4 @@
+import { SkillType } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/services/db.server';
 import { checkAccess } from '../check-access.server';
@@ -10,6 +11,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
     select: {
       id: true,
       name: true,
+      type: true,
     },
   });
 
@@ -21,19 +23,32 @@ export const actions = {
     await checkAccess(cookies);
 
     const form = await request.formData();
-    let name = form.get('name');
+    const name = form.get('name');
+    const type = form.get('type');
 
-    if (!name) {
-      return fail(400, { name, missing: true });
+    if (!name || !type) {
+      return fail(400, { missing: true });
     }
 
-    name = name.toString();
-    const id = name.toLowerCase().replaceAll(/ +/g, '-');
+    const skillName = name.toString();
+    const skillType = type.toString().toLowerCase() as SkillType;
+    const skillId = skillName.toLowerCase().replaceAll(/[ -/]+/g, '-');
+
+    if (!Object.hasOwn(SkillType, skillType)) {
+      return fail(400, { unknown: true });
+    }
 
     await db.skill.upsert({
-      create: { id, name },
-      update: { name },
-      where: { id },
+      create: {
+        id: skillId,
+        name: skillName,
+        type: skillType,
+      },
+      update: {
+        name: skillName,
+        type: skillType,
+      },
+      where: { id: skillId },
     });
 
     return { success: true };

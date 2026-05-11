@@ -1,6 +1,8 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import Input from "$lib/components/input.svelte";
+  import Select from "$lib/components/select.svelte";
+  import { SkillType } from "@prisma/client";
   import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
@@ -19,6 +21,7 @@
             <th></th>
             <th>ID</th>
             <th>Name</th>
+            <th>Type</th>
             <th></th>
           </tr>
         </thead>
@@ -28,10 +31,15 @@
               <td class="font-bold text-center">{index + 1}</td>
               <td>{skill.id}</td>
               <td>{skill.name}</td>
+              <td>{skill.type}</td>
               <td class="text-center">
-                <form method="POST" action="/admin/skills?/delete" use:enhance={({formData}) => {
-                  formData.set('id', skill.id);
-                }}>
+                <form
+                  method="POST"
+                  action="/admin/skills?/delete"
+                  use:enhance={({ formData }) => {
+                    formData.set("id", skill.id);
+                  }}
+                >
                   <button class="btn btn-sm btn-soft btn-error">Delete</button>
                 </form>
               </td>
@@ -54,8 +62,16 @@
       }}
     >
       <div class="w-full max-w-xs sticky top-0">
-        <Input name="name" label="Skill name" type="text" value="" required />
-        <button class="btn btn-success">{saving ? "Adding" : "Add"}</button>
+        <Input name="name" label="Skill name" type="text" required />
+        <Select
+          name="type"
+          label="Skill type"
+          options={Object.values(SkillType)}
+          required
+        />
+        <button class="btn btn-success mt-2">
+          {saving ? "Adding" : "Add"}
+        </button>
       </div>
     </form>
   </div>
